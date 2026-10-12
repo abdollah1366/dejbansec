@@ -15,3 +15,4 @@ wp-content/plugins/*
 __pycache__/
 *.pyc
 cdp-prof*/
+autopost/drafts/*.webp

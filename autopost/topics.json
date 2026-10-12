@@ -1,0 +1,14 @@
+[
+  {"id": "mobile-security", "name": "امنیت موبایل (Android و iOS)", "category": "امنیت", "kicker": "امنیت موبایل"},
+  {"id": "web-security", "name": "امنیت وب و OWASP", "category": "امنیت وب", "kicker": "امنیت وب"},
+  {"id": "wordpress", "name": "امنیت و نگهداری وردپرس", "category": "وردپرس", "kicker": "وردپرس"},
+  {"id": "phishing-privacy", "name": "فیشینگ، مهندسی اجتماعی و حریم خصوصی", "category": "آموزش امنیت", "kicker": "حریم خصوصی"},
+  {"id": "network", "name": "امنیت شبکه، روتر و Wi-Fi", "category": "امنیت شبکه", "kicker": "امنیت شبکه"},
+  {"id": "linux-server", "name": "امن‌سازی لینوکس و سرور", "category": "لینوکس و سرور", "kicker": "لینوکس و سرور"},
+  {"id": "cloud", "name": "امنیت ابری و SaaS", "category": "امنیت ابری", "kicker": "امنیت ابری"},
+  {"id": "pentest", "name": "تست نفوذ، ارزیابی آسیب‌پذیری و باگ‌بانتی (دفاعی)", "category": "تست نفوذ", "kicker": "تست نفوذ"},
+  {"id": "vuln-news", "name": "آسیب‌پذیری‌ها و رخدادهای مهم اخیر و راه محافظت", "category": "امنیت", "kicker": "خبر امنیتی"},
+  {"id": "web-design", "name": "طراحی سایت، تجربه کاربری و سرعت", "category": "طراحی سایت", "kicker": "طراحی سایت"},
+  {"id": "software-dev", "name": "توسعه نرم‌افزار امن، API و DevSecOps", "category": "نرم‌افزار", "kicker": "توسعه امن"},
+  {"id": "infrastructure", "name": "پشتیبان‌گیری، پاسخ به رخداد و زیرساخت", "category": "زیرساخت", "kicker": "زیرساخت"}
+]

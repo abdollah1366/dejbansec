@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Vazirmatn; src: url(assets/Vazirmatn-wght.woff2) format("woff2"); font-weight: 100 900; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 675px; overflow: hidden; }
+  body {
+    font-family: Vazirmatn, Tahoma, sans-serif; color: #fff; position: relative;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(20,184,166,.32), transparent 38%),
+      radial-gradient(circle at 88% 85%, rgba(99,102,241,.30), transparent 42%),
+      linear-gradient(135deg, #06101c 0%, #0b1f33 55%, #0e3a4a 100%);
+  }
+  .grid { position: absolute; inset: 0; opacity: .14;
+    background-image: linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px);
+    background-size: 48px 48px; mask-image: radial-gradient(circle at 30% 50%, #000 0%, transparent 75%); }
+  .icon { position: absolute; left: 70px; top: 50%; transform: translateY(-50%); width: 300px; height: 300px; opacity: .95; }
+  .content { position: absolute; right: 80px; top: 0; bottom: 0; width: 700px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+  .kicker { align-self: flex-start; font-size: 26px; font-weight: 700; color: #5eead4; background: rgba(94,234,212,.12); border: 1px solid rgba(94,234,212,.35); padding: 6px 20px; border-radius: 999px; }
+  h1 { font-size: 60px; line-height: 1.45; font-weight: 900; text-wrap: balance; }
+  .brand { position: absolute; right: 80px; bottom: 46px; display: flex; align-items: center; gap: 14px; font-size: 28px; font-weight: 800; color: #e2e8f0; }
+  .mark { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, #14b8a6, #0e7490); font-size: 26px; }
+  .domain { position: absolute; left: 80px; bottom: 52px; font-size: 22px; color: #94a3b8; letter-spacing: 1px; direction: ltr; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <svg class="icon" viewBox="0 0 120 120" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M60 10 98 24v30c0 26-16 44-38 56C38 98 22 80 22 54V24Z" fill="rgba(20,184,166,.16)" stroke="#2dd4bf" stroke-width="3"/>
+    <rect x="44" y="52" width="32" height="26" rx="5" stroke="#e2e8f0" stroke-width="3"/>
+    <path d="M50 52v-7a10 10 0 0 1 20 0v7" stroke="#e2e8f0" stroke-width="3"/>
+    <circle cx="60" cy="64" r="3.5" fill="#5eead4"/>
+  </svg>
+  <div class="content">
+    <div class="kicker" id="kicker">امنیت سایبری</div>
+    <h1 id="title">عنوان مقاله</h1>
+  </div>
+  <div class="brand"><span class="mark">د</span>دژبان‌سک</div>
+  <div class="domain">dejbansec.ir</div>
+  <script>
+    const q = new URLSearchParams(location.search);
+    if (q.get('title')) document.getElementById('title').textContent = q.get('title');
+    if (q.get('kicker')) document.getElementById('kicker').textContent = q.get('kicker');
+    const h = document.getElementById('title');
+    for (let s = 60; s > 38 && h.scrollHeight > 330; s -= 2) h.style.fontSize = s + 'px';
+  </script>
+</body>
+</html>
