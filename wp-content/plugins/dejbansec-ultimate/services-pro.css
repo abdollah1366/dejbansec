@@ -1,0 +1,22 @@
+
+/* DejbanSec Services Pro v1 */
+.dsu-services-pro{gap:20px}
+.dsu-service-pro{padding:28px;position:relative;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.012))}
+.dsu-service-pro:before{content:"";position:absolute;inset:-60px auto auto -60px;width:150px;height:150px;border-radius:50%;background:rgba(39,224,194,.09);filter:blur(35px);pointer-events:none}
+.dsu-service-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.dsu-service-icon{width:54px;height:54px;display:grid;place-items:center;border:1px solid rgba(39,224,194,.22);border-radius:16px;background:rgba(39,224,194,.07);font-size:25px}
+.dsu-service-pro .dsu-num{font-size:13px;color:rgba(255,255,255,.32)}
+.dsu-service-pro h3{font-size:23px;margin:0 0 10px}
+.dsu-service-pro p{font-size:14px;line-height:1.95;min-height:82px}
+.dsu-service-list{list-style:none;padding:0;margin:20px 0 23px;display:grid;gap:8px}
+.dsu-service-list li{font-size:12px;color:#cddbe3}
+.dsu-service-list li:before{content:"✓";color:var(--dsu-a);font-weight:900;margin-left:8px}
+.dsu-service-link{display:flex;justify-content:space-between;align-items:center;padding-top:15px;border-top:1px solid var(--dsu-line)}
+.dsu-service-link span{font-size:18px;transition:.2s}
+.dsu-service-link:hover span{transform:translateX(-4px)}
+.dsu-services-cta{margin-top:22px;padding:32px 36px;border:1px solid rgba(39,224,194,.23);border-radius:25px;background:linear-gradient(100deg,rgba(39,224,194,.09),rgba(112,128,255,.06));display:flex;align-items:center;justify-content:space-between;gap:28px}
+.dsu-services-cta h3{font-size:25px;margin:4px 0 8px}
+.dsu-services-cta p{color:var(--dsu-muted);margin:0;font-size:13px}
+.dsu-services-actions{display:flex;gap:10px;flex-shrink:0}
+@media(max-width:900px){.dsu-services-cta{display:block}.dsu-services-actions{margin-top:20px}}
+@media(max-width:560px){.dsu-service-pro p{min-height:0}.dsu-services-cta{padding:26px 22px}.dsu-services-actions{flex-direction:column}.dsu-services-actions .dsu-btn{width:100%}}

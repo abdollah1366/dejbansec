@@ -1,0 +1,4 @@
+/* RTL overrides for Dejban Child */
+body{direction:rtl}
+.dj-terminal{direction:ltr;text-align:left}
+.dj-actions,.dj-section-head{direction:rtl}

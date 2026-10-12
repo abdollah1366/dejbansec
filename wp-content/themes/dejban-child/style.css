@@ -1,0 +1,51 @@
+/*
+Theme Name: Dejban Child
+Theme URI: https://dejbansec.ir/
+Description: قالب فرزند اختصاصی دیژبان برای بازطراحی حرفه‌ای سایت امنیت و آموزش.
+Author: Dejban
+Template: Impreza
+Version: 1.0.0
+Text Domain: dejban-child
+*/
+
+:root{
+  --dj-primary:#6d5dfc;
+  --dj-primary-2:#00c2ff;
+  --dj-dark:#07111f;
+  --dj-dark-2:#0d1b2e;
+  --dj-text:#182235;
+  --dj-muted:#667085;
+  --dj-bg:#f6f8fc;
+  --dj-card:#ffffff;
+  --dj-border:#e7ebf2;
+  --dj-radius:22px;
+  --dj-shadow:0 18px 50px rgba(10,25,50,.09);
+}
+html{scroll-behavior:smooth}
+body{font-family:IRANSansfanum,yekan,Tahoma,sans-serif!important;color:var(--dj-text);background:var(--dj-bg)}
+a{text-decoration:none}
+.dj-wrap{width:min(1180px,calc(100% - 36px));margin:auto}
+.dj-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#07111f 0%,#101f38 58%,#172c4d 100%);color:#fff;padding:90px 0 75px}
+.dj-hero:before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(109,93,252,.35),transparent 65%);left:-160px;top:-180px}
+.dj-hero:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,194,255,.2),transparent 68%);right:-120px;bottom:-180px}
+.dj-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center}
+.dj-kicker{display:inline-flex;padding:8px 14px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.06);font-size:14px}
+.dj-hero h1{font-size:clamp(36px,5vw,68px);line-height:1.15;margin:20px 0 18px;color:#fff}
+.dj-hero p{font-size:19px;line-height:2;color:#cbd6e8;max-width:680px}
+.dj-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.dj-btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 22px;border-radius:13px;font-weight:700}
+.dj-btn-primary{background:linear-gradient(135deg,var(--dj-primary),#8d7dff);color:#fff}
+.dj-btn-ghost{border:1px solid rgba(255,255,255,.2);color:#fff;background:rgba(255,255,255,.05)}
+.dj-terminal{background:#08111f;border:1px solid rgba(255,255,255,.12);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.25);padding:20px}
+.dj-terminal-top{display:flex;gap:7px;margin-bottom:20px}.dj-terminal-top i{width:9px;height:9px;border-radius:50%;background:#65758d}
+.dj-terminal pre{margin:0;color:#b9f6d3;font:14px/2.1 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}
+.dj-section{padding:78px 0}.dj-section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:32px}.dj-section-head h2{font-size:34px;margin:0 0 8px}.dj-section-head p{color:var(--dj-muted);margin:0}
+.dj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.dj-card{background:var(--dj-card);border:1px solid var(--dj-border);border-radius:var(--dj-radius);padding:28px;box-shadow:var(--dj-shadow)}
+.dj-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#eef0ff;color:var(--dj-primary);font-size:23px;margin-bottom:18px}
+.dj-card h3{margin:0 0 10px;font-size:20px}.dj-card p{color:var(--dj-muted);line-height:1.9;margin:0}
+.dj-stats{background:#fff;border-top:1px solid var(--dj-border);border-bottom:1px solid var(--dj-border);padding:28px 0}.dj-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.dj-stat{text-align:center;padding:15px}.dj-stat strong{display:block;font-size:32px}.dj-stat span{color:var(--dj-muted)}
+.dj-band{background:linear-gradient(135deg,#101b31,#0b1423);color:#fff;border-radius:28px;padding:45px}.dj-band h2{margin:0 0 12px;color:#fff}.dj-band p{color:#c9d3e5;line-height:1.9}
+.dj-footer{background:#07111f;color:#9eabc0;padding:45px 0}.dj-footer h3{color:#fff}.dj-footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:35px}.dj-footer a{color:#b8c4d7;display:block;margin:9px 0}
+@media(max-width:900px){.dj-hero-grid{grid-template-columns:1fr}.dj-grid{grid-template-columns:1fr 1fr}.dj-footer-grid{grid-template-columns:1fr 1fr}.dj-stats-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.dj-wrap{width:min(100% - 24px,1180px)}.dj-grid{grid-template-columns:1fr}.dj-stats-grid{grid-template-columns:1fr 1fr}.dj-section{padding:55px 0}.dj-band{padding:28px}.dj-footer-grid{grid-template-columns:1fr}}
