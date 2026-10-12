@@ -1,0 +1,1 @@
+[vc_row][vc_column][us_grid post_type="current_query" items_layout="blog_classic" img_size="default" type="grid" columns="1" items_gap="5rem" pagination="ajax" pagination_btn_style="1"][/vc_column][/vc_row]

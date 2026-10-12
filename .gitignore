@@ -1,0 +1,17 @@
+# never commit secrets or WordPress core/runtime files
+wp-config.php
+.env
+*.env
+*.sql
+*.sql.gz
+*.zip
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/themes/Impreza/
+wp-content/plugins/*
+!wp-content/plugins/dejbansec-*/
+!wp-content/plugins/dsu-integration/
+__pycache__/
+*.pyc
+cdp-prof*/

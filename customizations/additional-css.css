@@ -1,0 +1,24 @@
+/* Customizer > Additional CSS (wp-custom-css), exported from the live site */
+:root { --dz-bg: #ffffff; --dz-soft: #f4f7fb; --dz-text: #0f172a; --dz-muted: #475569; --dz-accent: #0e7490; --dz-accent-2: #14b8a6; }
+.dsu, .dsu-section, .dsu-section.dsu-dark, .dsu-hero, .dsu-video, .dsu-contact { background: var(--dz-bg) !important; color: var(--dz-text) !important; }
+.dsu-section.dsu-dark, .dsu-hero, .dsu-video { background: var(--dz-soft) !important; }
+.dsu-header { background: rgba(255,255,255,0.97) !important; border-bottom: 1px solid #e2e8f0 !important; box-shadow: 0 1px 12px rgba(15,23,42,0.06) !important; }
+.dsu-header, .dsu-header a, .dsu-header span, .dsu-header strong { color: var(--dz-text) !important; }
+.dsu-header .dsu-btn, .dsu-header a[class*="btn"], .dsu-header [class*="cta"] { color: #ffffff !important; background: var(--dz-accent) !important; }
+.dsu h1, .dsu h2, .dsu h3, .dsu h4, .dsu h5 { color: var(--dz-text) !important; }
+.dsu p, .dsu li, .dsu span { color: var(--dz-muted) !important; }
+.dsu small, .dsu-post-meta, .dsu-hero small, .dsu-hero [class*="badge"], .dsu-hero [class*="eyebrow"], .dsu-hero [class*="kicker"] { color: var(--dz-accent) !important; background: #e0f2f1 !important; border-color: #99f6e4 !important; }
+.dsu-hero h1 span, .dsu-hero h2 span { color: var(--dz-accent) !important; }
+.dsu a { color: var(--dz-accent); }
+.dsu a:hover { color: var(--dz-accent-2); }
+.dsu-post, .dsu-project, .dsu-form, .dsu-card, .dsu-box { background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 16px !important; box-shadow: 0 10px 28px rgba(15,23,42,0.07) !important; }
+.dsu button, .dsu .btn, .dsu input[type="submit"], .dsu [class*="btn"] { background: var(--dz-accent) !important; color: #ffffff !important; border-color: var(--dz-accent) !important; border-radius: 12px !important; }
+.dsu input, .dsu textarea, .dsu select { background: #ffffff !important; color: var(--dz-text) !important; border: 1px solid #cbd5e1 !important; border-radius: 10px !important; }
+.dsu-footer, .dsu-footer * { background: #0f172a !important; color: #e2e8f0 !important; }
+.dsu-footer a { color: #e2e8f0 !important; }
+.dsu img { border-radius: 14px; }
+.dsu-glass, .dsu-glass * { background: transparent !important; color: #e6eef9 !important; }
+.dsu-glass { background: rgba(6,16,28,0.9) !important; border: 1px solid rgba(94,234,212,0.25) !important; box-shadow: 0 12px 30px rgba(15,23,42,0.25) !important; }
+.dsu-glass small, .dsu-glass span { color: #5eead4 !important; }
+.dsu-badge { display: none !important; }
+@media (max-width: 768px) { .dsu-section { padding-left: 16px !important; padding-right: 16px !important; } }

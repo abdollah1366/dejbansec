@@ -1,0 +1,1 @@
+[vc_row height="custom" content_placement="middle" css="%7B%22default%22%3A%7B%22padding-bottom%22%3A%220px%22%7D%7D"][vc_column][us_post_title align="center" tag="h1"][us_post_content type="excerpt_only"][/vc_column][/vc_row][vc_row][vc_column][us_post_content type="full_content" remove_rows="parent_row"][/vc_column][/vc_row]

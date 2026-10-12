@@ -1,0 +1,44 @@
+[
+  {
+    "source": "/blog/",
+    "target": "https://dejbansec.ir/markaz-magalat-dejbansec/",
+    "code": 301,
+    "enabled": true
+  },
+  {
+    "source": "/home/",
+    "target": "https://dejbansec.ir/",
+    "code": 301,
+    "enabled": true
+  },
+  {
+    "source": "/software-development/",
+    "target": "https://dejbansec.ir/%d8%aa%d9%88%d8%b3%d8%b9%d9%87-%d9%86%d8%b1%d9%85-%d8%a7%d9%81%d8%b2%d8%a7%d8%b1/",
+    "code": 301,
+    "enabled": true
+  },
+  {
+    "source": "/web-design/",
+    "target": "https://dejbansec.ir/%d8%b7%d8%b1%d8%a7%d8%ad%db%8c-%d9%88-%d8%aa%d9%88%d8%b3%d8%b9%d9%87-%d9%88%d8%a8/",
+    "code": 301,
+    "enabled": true
+  },
+  {
+    "source": "/cyber-security/",
+    "target": "https://dejbansec.ir/%d8%a7%d9%85%d9%86%db%8c%d8%aa-%d8%b3%d8%a7%db%8c%d8%a8%d8%b1%db%8c/",
+    "code": 301,
+    "enabled": true
+  },
+  {
+    "source": "/about/",
+    "target": "https://dejbansec.ir/%d8%af%d8%b1%d8%a8%d8%a7%d8%b1%d9%87-%d9%85%d8%a7/",
+    "code": 301,
+    "enabled": true
+  },
+  {
+    "source": "/contact/",
+    "target": "https://dejbansec.ir/%d8%aa%d9%85%d8%a7%d8%b3-%d8%a8%d8%a7-%d9%85%d8%a7/",
+    "code": 301,
+    "enabled": true
+  }
+]
