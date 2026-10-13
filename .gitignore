@@ -16,3 +16,5 @@ __pycache__/
 *.pyc
 cdp-prof*/
 autopost/drafts/*.webp
+
+autopost/runs/

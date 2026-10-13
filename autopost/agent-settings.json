@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch",
+      "Edit(autopost/drafts/**)",
+      "Bash(python autopost/publish.py:*)",
+      "Bash(python autopost/site.py:*)"
+    ],
+    "deny": [
+      "Bash(git:*)",
+      "Bash(curl:*)",
+      "Bash(powershell:*)",
+      "Read(//c/Users/Administrator/.dejbansec/**)",
+      "Read(~/.claude/.credentials.json)"
+    ]
+  }
+}

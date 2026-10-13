@@ -2,6 +2,10 @@
 
 Usage:  python autopost/publish.py autopost/drafts/<file>.json [--draft] [--dry-run]
 
+--dry-run validates the file, makes the cover, checks the WordPress login and the slug with read-only
+requests, and stops before anything is uploaded or posted.
+At most DAILY_CAP posts (env AUTOPOST_DAILY_CAP, default 2) are published per Tehran calendar day, counted from log.jsonl.
+
 The WordPress application password for user "chat" (named "dejbansec-autoposter") is stored
 DPAPI-encrypted in %USERPROFILE%\\.dejbansec\\wp-autoposter.dpapi and decrypted at run time;
 it is never written to the repo. WP_USER / WP_PASS env vars override it.
@@ -17,6 +21,23 @@ CATEGORIES = {  # name -> id on the site
     "لینوکس و سرور": 49, "طراحی سایت": 42, "نرم‌افزار": 43, "وردپرس": 20, "آموزش امنیت": 50, "زیرساخت": 44,
 }
 REQUIRED = ("title", "slug", "excerpt", "category", "tags", "content_html", "cover_kicker")
+TEHRAN = datetime.timezone(datetime.timedelta(hours=3, minutes=30))  # Iran has no DST since 2022
+DAILY_CAP = int(os.environ.get("AUTOPOST_DAILY_CAP", "2"))
+
+
+def published_today():
+    """Posts in log.jsonl published on today's Tehran date (naive dates in old entries are this PC's local time)."""
+    today, n = datetime.datetime.now(TEHRAN).date(), 0
+    if os.path.exists(LOG):
+        for line in open(LOG, encoding="utf-8"):
+            try:
+                e = json.loads(line)
+                d = datetime.datetime.fromisoformat(e["date"])
+            except (ValueError, KeyError):
+                continue
+            if e.get("status") == "publish" and d.astimezone(TEHRAN).date() == today:
+                n += 1
+    return n
 
 
 def password():
@@ -121,15 +142,22 @@ def main():
     if words < 900:
         raise SystemExit(f"article too short ({words} words); expected 1200-2000")
 
+    done = published_today()
+    if not (draft or dry) and done >= DAILY_CAP:
+        raise SystemExit(f"daily cap reached: {done} posts already published today (Tehran time); not publishing")
+
     cover = os.path.join(HERE, "drafts", art["slug"] + ".webp")
     size = make_cover(art.get("cover_title") or art["title"], art["cover_kicker"], cover)
     print(f"cover {cover} {size} bytes, {words} words")
-    if dry:
-        return
 
     AUTH = "Basic " + base64.b64encode(f"{USER}:{password()}".encode()).decode()
     if rest("GET", f"wp/v2/posts?slug={art['slug']}&status=publish,draft,future&_fields=id"):
         raise SystemExit(f"a post with slug {art['slug']} already exists")
+    if dry:
+        me = rest("GET", "wp/v2/users/me?context=edit&_fields=id,roles")
+        print(f"DRY-RUN OK: login works (user {me['id']}, roles {me.get('roles')}), slug is free, "
+              f"{done}/{DAILY_CAP} published today; nothing was uploaded or posted")
+        return
 
     b = "----dejbansecautopost"
     body = (f"--{b}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{art['slug']}.webp\"\r\n"
@@ -143,7 +171,7 @@ def main():
         "tags": find_or_create_tags(art["tags"]), "featured_media": media["id"],
         "comment_status": "open",
     })
-    entry = {"date": datetime.datetime.now().isoformat(timespec="seconds"), "id": post["id"], "status": post["status"],
+    entry = {"date": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "id": post["id"], "status": post["status"],
              "link": post["link"], "title": art["title"], "category": art["category"], "topic": art.get("topic", ""),
              "sources": art.get("sources", []), "words": words}
     with open(LOG, "a", encoding="utf-8") as f:
