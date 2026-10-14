@@ -2,14 +2,14 @@
 /**
  * Plugin Name: دژبان‌سک — سئو
  * Description: توضیحات متا، Open Graph و Twitter Card (پیش‌نمایش لینک در تلگرام و واتساپ)، داده‌ی ساختاریافته (Organization، WebSite، BlogPosting، BreadcrumbList، FAQPage)، نقشه‌ی سایت تمیز و noindex برای صفحه‌های کم‌محتوا. اگر Yoast، Rank Math یا AIOSEO فعال باشد، کاری نمی‌کند.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: DejbanSec
  * License: GPL-2.0-or-later
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('DSEO_VERSION', '1.0.1');
+define('DSEO_VERSION', '1.0.2');
 // Text the seed plugins put in placeholder posts and projects.
 define('DSEO_THIN_MARKERS', array('این متن محتوای اولیه قابل ویرایش است', 'این نمونه‌کار محتوای نمونه است'));
 
@@ -84,6 +84,8 @@ function dseo_description() {
             $manual = trim((string) get_post_meta($post->ID, $key, true));
             if ($manual !== '') return dseo_clean($manual, 40);
         }
+        $service = dseo_service_for($post);
+        if ($service && !empty($service['lead'])) return dseo_clean($service['lead'], 40);
         $text = has_excerpt($post) ? $post->post_excerpt : $post->post_content;
         return dseo_clean($text, 32);
     }
@@ -95,11 +97,27 @@ function dseo_description() {
     return '';
 }
 
+/** The dejbansec-all-services-suite entry a page shows, matched by slug. */
+function dseo_service_for($post) {
+    if (!function_exists('dss_services') || $post->post_type !== 'page') return null;
+    $slug = urldecode($post->post_name);
+    foreach (dss_services() as $service) {
+        if (($service['slug'] ?? '') === $slug) return $service;
+    }
+    return null;
+}
+
 /** array(url, width, height) for the page's share image, or null. */
 function dseo_image() {
     if (is_singular() && has_post_thumbnail(get_queried_object_id())) {
         $img = wp_get_attachment_image_src(get_post_thumbnail_id(get_queried_object_id()), 'large');
         if ($img) return array($img[0], (int) $img[1], (int) $img[2]);
+    }
+    // Impreza's per-page share image (set on the service pages), when there is no featured image.
+    if (is_singular()) {
+        $og = get_post_meta(get_queried_object_id(), 'us_og_image', true);
+        if (is_numeric($og) && ($img = wp_get_attachment_image_src((int) $og, 'large'))) return array($img[0], (int) $img[1], (int) $img[2]);
+        if (is_string($og) && preg_match('~^https?://~', $og)) return array(esc_url_raw($og), 0, 0);
     }
     $s = dseo_settings();
     if ($s['default_image']) return array($s['default_image'], 0, 0);
