@@ -2,14 +2,14 @@
 /**
  * Plugin Name: دژبان‌سک — سئو
  * Description: توضیحات متا، Open Graph و Twitter Card (پیش‌نمایش لینک در تلگرام و واتساپ)، داده‌ی ساختاریافته (Organization، WebSite، BlogPosting، BreadcrumbList، FAQPage)، نقشه‌ی سایت تمیز و noindex برای صفحه‌های کم‌محتوا. اگر Yoast، Rank Math یا AIOSEO فعال باشد، کاری نمی‌کند.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: DejbanSec
  * License: GPL-2.0-or-later
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('DSEO_VERSION', '1.0.0');
+define('DSEO_VERSION', '1.0.1');
 // Text the seed plugins put in placeholder posts and projects.
 define('DSEO_THIN_MARKERS', array('این متن محتوای اولیه قابل ویرایش است', 'این نمونه‌کار محتوای نمونه است'));
 
@@ -177,7 +177,45 @@ add_action('wp_head', function () {
 
     echo "\n<!-- dejbansec-seo " . DSEO_VERSION . " -->\n";
     foreach ($tags as $t) printf('<meta %s="%s" content="%s">' . "\n", $t[0], esc_attr($t[1]), esc_attr($t[2]));
+    echo "<!-- /dejbansec-seo -->\n";
 }, 2);
+
+/*
+ * The theme (Impreza) prints its own description and Open Graph tags. Rather than
+ * switching those off in the theme, which also drops its canonical and noindex
+ * handling, buffer <head> and drop only the theme's tags that ours replace.
+ */
+function dseo_dedupe_head($html) {
+    if (!preg_match('~<!-- dejbansec-seo [^>]*-->(.*?)<!-- /dejbansec-seo -->~s', $html, $ours, PREG_OFFSET_CAPTURE)) return $html;
+    preg_match_all('~<meta\s+(?:name|property)="([^"]+)"~', $ours[1][0], $m);
+    $keys = array_flip($m[1]);
+    // Keys like og:image may legitimately repeat inside our own block; only drop them elsewhere.
+    $start = $ours[0][1];
+    $end   = $start + strlen($ours[0][0]);
+    $before = substr($html, 0, $start);
+    $after  = substr($html, $end);
+    $strip = function ($chunk) use ($keys) {
+        return preg_replace_callback('~<meta\b[^>]*>\s*~i', function ($tag) use ($keys) {
+            if (!preg_match('~\b(?:name|property)\s*=\s*(["\'])([^"\']+)\1~i', $tag[0], $k)) return $tag[0];
+            return isset($keys[strtolower($k[2])]) ? '' : $tag[0];
+        }, $chunk);
+    };
+    return $strip($before) . $ours[0][0] . $strip($after);
+}
+
+add_action('wp_head', function () {
+    if (dseo_other_seo_plugin() || is_admin() || !dseo_settings()['output_meta']) return;
+    ob_start();
+    $GLOBALS['dseo_ob_level'] = ob_get_level();
+}, -1000);
+
+add_action('wp_head', function () {
+    if (empty($GLOBALS['dseo_ob_level'])) return;
+    // Only close our own buffer; if something left one open in between, leave the head as is.
+    if (ob_get_level() !== $GLOBALS['dseo_ob_level']) return;
+    echo dseo_dedupe_head(ob_get_clean());
+    $GLOBALS['dseo_ob_level'] = 0;
+}, PHP_INT_MAX);
 
 /* ------------------------------------------------------------------ *
  * JSON-LD

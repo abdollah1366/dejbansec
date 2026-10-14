@@ -2,14 +2,14 @@
 /**
  * Plugin Name: دژبان‌سک — محافظ فرم‌ها و ایمیل
  * Description: ضد اسپم برای فرم «شروع همکاری» و فرم‌های خدمات (تله‌ی ربات، زمان‌سنج، محدودیت ارسال، فیلتر لینک)، ذخیره‌ی همه‌ی درخواست‌ها در پیشخوان، ارسال ایمیل از طریق SMTP و ثبت خطای ایمیل.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: DejbanSec
  * License: GPL-2.0-or-later
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('DFG_VERSION', '1.0.0');
+define('DFG_VERSION', '1.0.1');
 define('DFG_MIN_SECONDS', 3);          // faster than this is a bot
 define('DFG_MAX_AGE', DAY_IN_SECONDS); // same lifetime as the forms' nonces
 define('DFG_RATE_SHORT', 3);           // per IP per 10 minutes
@@ -126,11 +126,33 @@ function dfg_is_silent($reason) {
     return in_array($reason, array('honeypot', 'too_fast', 'link_in_name'), true);
 }
 
+/**
+ * The page the form was posted from. The forms post to their own URL, so
+ * wp_get_referer() returns false there (it equals the request URI) and the
+ * original handlers fell back to the home page.
+ */
+function dfg_current_url() {
+    $uri   = (string) wp_unslash($_SERVER['REQUEST_URI'] ?? '/');
+    $path  = '/' . ltrim((string) wp_parse_url($uri, PHP_URL_PATH), '/');
+    $query = (string) wp_parse_url($uri, PHP_URL_QUERY);
+    $home  = wp_parse_url(home_url());
+    $origin = $home['scheme'] . '://' . $home['host'] . (isset($home['port']) ? ':' . $home['port'] : '');
+    return $origin . $path . ($query === '' ? '' : '?' . $query);
+}
+
 function dfg_back_url($kind, $args) {
-    $back = wp_get_referer() ?: home_url('/');
-    $back = remove_query_arg(array('dsu_sent', 'dss_sent', 'dfg_err'), $back);
+    $back = remove_query_arg(array('dsu_sent', 'dss_sent', 'dfg_err'), dfg_current_url());
     return add_query_arg($args, $back) . ($kind === 'home' ? '#contact' : '');
 }
+
+/** Send visitors back to the service page they used, where the success notice is shown. */
+add_filter('wp_redirect', function ($location) {
+    if (dfg_form_kind() !== 'service') return $location;
+    $query = (string) wp_parse_url($location, PHP_URL_QUERY);
+    parse_str($query, $q);
+    if (empty($q['dss_sent'])) return $location;
+    return dfg_back_url('service', array('dss_sent' => '1'));
+});
 
 // Priority 1: before the live-chat bridge (5) and the original handlers (10).
 add_action('init', function () {
