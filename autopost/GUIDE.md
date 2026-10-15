@@ -38,9 +38,20 @@ Length: **1300–2000 words**. Persian: formal-but-friendly, short sentences, co
 ## 4. HTML rules
 
 - Plain semantic HTML only: `h2 h3 p ul ol li strong em a table thead tbody tr th td blockquote code div.dp-summary div.dp-cta ul.dp-sources`.
-- No `<h1>` (the theme prints the title), no `<img>`, no `<script>`, `<style>`, `<iframe>`, no inline styles, no external embeds. Images: the publisher makes a branded cover automatically, which becomes the featured image.
+- No `<h1>` (the theme prints the title), no `<img>`, no `<script>`, `<style>`, `<iframe>`, no inline styles, no external embeds. Images: the publisher makes a branded cover from the photo you choose (section 6), which becomes the featured image.
 
-## 5. Output file
+## 6. Cover photo
+
+Every article gets a real photo that fits its subject, shown darkened under the branded cover. Choose it after the article is written:
+
+1. Pick 2–3 concrete **English** words for what the photo should show (e.g. `router network cables`, `smartphone phone call`, `server room`, `padlock keyboard`).
+2. Run `python autopost/images.py site <slug> "<words>"` and look at `autopost/drafts/img/<slug>/site-sheet.jpg` with the Read tool. Use a site photo only if it **clearly** fits the subject and is not marked as recently used.
+3. Otherwise run `python autopost/images.py web <slug> "<words>"` (CC0 / public-domain photos only; the script already filters licenses). Look at `web-sheet.jpg`, then Read the chosen `web-<n>.jpg` itself at full size. It must have **no logo, watermark, brand name, readable text or recognisable face**, and must not be a news, military, police or court photo. If none fits, try up to two other searches with simpler words.
+4. If nothing fits after that, use the closest site photo; leave `image` out only if there is truly nothing usable (the cover then falls back to the plain branded design).
+
+Add to the article JSON: `"image": "site-<n>"` or `"web-<n>"`, `"image_alt"` (a short Persian description of the photo) and, for web photos, `"image_keywords"` (3–8 English words describing the photo; they let later articles find it on the site). publish.py downloads the photo, uploads web photos to the site with their creator, license and source in the caption, builds the cover from it and records it in `log.jsonl`.
+
+## 5. Output file (after choosing the photo in section 6)
 
 Save each article as `autopost/drafts/YYYY-MM-DD-<slug>.json` (UTF-8):
 
@@ -54,9 +65,12 @@ Save each article as `autopost/drafts/YYYY-MM-DD-<slug>.json` (UTF-8):
   "tags": ["3–6 Persian or English tags"],
   "cover_kicker": "2–3 word label on the cover, e.g. امنیت موبایل",
   "cover_title": "optional shorter title for the cover (≤ 60 characters)",
+  "image": "site-2 or web-4 (from autopost/images.py, see section 6)",
+  "image_alt": "short Persian description of the photo",
+  "image_keywords": ["english", "words", "describing", "the", "photo"],
   "content_html": "…",
   "sources": ["https://…", "https://…"]
 }
 ```
 
-Then publish with `python autopost/publish.py autopost/drafts/<file>.json`. The script validates the file, makes the cover, uploads it and publishes the post, then appends to `log.jsonl`. If it refuses (too short, bad slug, duplicate), fix the JSON and run it again.
+Then publish with `python autopost/publish.py autopost/drafts/<file>.json`. The script validates the file, fetches the photo, makes the cover, uploads them and publishes the post, then appends to `log.jsonl`. If it refuses (too short, bad slug, duplicate), fix the JSON and run it again.

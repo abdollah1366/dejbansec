@@ -23,9 +23,21 @@
   .brand { position: absolute; right: 80px; bottom: 46px; display: flex; align-items: center; gap: 14px; font-size: 28px; font-weight: 800; color: #e2e8f0; }
   .mark { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, #14b8a6, #0e7490); font-size: 26px; }
   .domain { position: absolute; left: 80px; bottom: 52px; font-size: 22px; color: #94a3b8; letter-spacing: 1px; direction: ltr; }
+  /* ?bg=<image url>: a topic photo under the text, darkened on the text side (right) so it stays readable */
+  .photo, .shade { position: absolute; inset: 0; display: none; }
+  .photo { background: center / cover no-repeat; }
+  .shade { background:
+      linear-gradient(270deg, rgba(6,16,28,.94) 0%, rgba(6,16,28,.86) 42%, rgba(6,16,28,.45) 75%, rgba(6,16,28,.30) 100%),
+      linear-gradient(0deg, rgba(6,16,28,.75) 0%, transparent 30%); }
+  body.has-photo .photo, body.has-photo .shade { display: block; }
+  body.has-photo .grid, body.has-photo .icon { display: none; }
+  body.has-photo .domain { color: #cbd5e1; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+  body.has-photo h1 { text-shadow: 0 2px 12px rgba(0,0,0,.55); }
 </style>
 </head>
 <body>
+  <div class="photo" id="photo"></div>
+  <div class="shade"></div>
   <div class="grid"></div>
   <svg class="icon" viewBox="0 0 120 120" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path d="M60 10 98 24v30c0 26-16 44-38 56C38 98 22 80 22 54V24Z" fill="rgba(20,184,166,.16)" stroke="#2dd4bf" stroke-width="3"/>
@@ -43,6 +55,10 @@
     const q = new URLSearchParams(location.search);
     if (q.get('title')) document.getElementById('title').textContent = q.get('title');
     if (q.get('kicker')) document.getElementById('kicker').textContent = q.get('kicker');
+    if (q.get('bg')) {
+      document.getElementById('photo').style.backgroundImage = 'url("' + q.get('bg').replace(/"/g, '%22') + '")';
+      document.body.classList.add('has-photo');
+    }
     const h = document.getElementById('title');
     for (let s = 60; s > 38 && h.scrollHeight > 330; s -= 2) h.style.fontSize = s + 'px';
   </script>

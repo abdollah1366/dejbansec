@@ -44,10 +44,17 @@ def password():
     if os.environ.get("WP_PASS"):
         return os.environ["WP_PASS"]
     path = os.path.join(os.environ["USERPROFILE"], ".dejbansec", "wp-autoposter.dpapi")
-    ps = ("$s=ConvertTo-SecureString (Get-Content -Raw '%s').Trim();"
-          "[Runtime.InteropServices.Marshal]::PtrToStringBSTR([Runtime.InteropServices.Marshal]::SecureStringToBSTR($s))") % path
-    return subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
-                          capture_output=True, text=True, check=True).stdout.strip()
+    # "machine:<base64>" is written by tools/save-secret.ps1 (survives a Windows password reset);
+    # anything else is the older ConvertFrom-SecureString (user scope) format.
+    ps = ("$c=(Get-Content -Raw '%s').Trim();"
+          "if($c.StartsWith('machine:')){Add-Type -AssemblyName System.Security;"
+          "[Text.Encoding]::UTF8.GetString([Security.Cryptography.ProtectedData]::Unprotect([Convert]::FromBase64String($c.Substring(8)),$null,'LocalMachine'))}"
+          "else{$s=ConvertTo-SecureString $c;"
+          "[Runtime.InteropServices.Marshal]::PtrToStringBSTR([Runtime.InteropServices.Marshal]::SecureStringToBSTR($s))}") % path
+    r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", ps], capture_output=True, text=True)
+    if r.returncode or not r.stdout.strip():
+        raise SystemExit(f"cannot read the WordPress password from {path}; save it again with tools/save-secret.ps1 wp")
+    return r.stdout.strip()
 
 
 USER = os.environ.get("WP_USER", "chat")
@@ -83,7 +90,8 @@ def clean_html(html):
     return html.strip()
 
 
-def make_cover(title, kicker, out_path):
+def make_cover(title, kicker, out_path, bg=None):
+    """bg: a photo path relative to autopost/ (e.g. drafts/img/<slug>/photo.webp) shown darkened under the text."""
     from cdpshot import WS, CHROME  # local helper: headless Chrome over CDP
     port = 9341
     prof = os.path.join(os.environ.get("TEMP", HERE), "dejbansec-cover-prof")
@@ -98,7 +106,10 @@ def make_cover(title, kicker, out_path):
                 time.sleep(0.25)
         ws = WS([t for t in tabs if t["type"] == "page"][0]["webSocketDebuggerUrl"])
         ws.send("Emulation.setDeviceMetricsOverride", width=1200, height=675, deviceScaleFactor=1, mobile=False)
-        url = "file:///" + os.path.join(HERE, "cover.html").replace("\\", "/") + "?" + urllib.parse.urlencode({"title": title, "kicker": kicker})
+        params = {"title": title, "kicker": kicker}
+        if bg:
+            params["bg"] = bg.replace("\\", "/")
+        url = "file:///" + os.path.join(HERE, "cover.html").replace("\\", "/") + "?" + urllib.parse.urlencode(params)
         ws.send("Page.navigate", url=url)
         time.sleep(2.5)
         ws.send("Runtime.evaluate", expression="document.fonts.ready.then(()=>1)", awaitPromise=True)
@@ -111,6 +122,24 @@ def make_cover(title, kicker, out_path):
         return len(data)
     finally:
         proc.terminate()
+
+
+def upload_media(path, filename, fields):
+    """Upload a WebP to the media library; fields: alt_text, title, caption, description."""
+    b = "----dejbansecautopost"
+    body = (f"--{b}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{filename}\"\r\n"
+            "Content-Type: image/webp\r\n\r\n").encode() + open(path, "rb").read() + b"\r\n"
+    for k, v in fields.items():
+        body += f"--{b}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n".encode()
+    body += f"--{b}--\r\n".encode()
+    return rest("POST", "wp/v2/media", raw=body, headers={"Content-Type": f"multipart/form-data; boundary={b}"})
+
+
+def photo_credit(c):
+    """Caption for a downloaded photo: creator, license and source page."""
+    lic = {"cc0": "CC0", "pdm": "مالکیت عمومی (Public Domain)"}.get(c.get("license"), c.get("license") or "")
+    who = f"{c['creator']} — " if c.get("creator") else ""
+    return f'عکس: {who}{lic} — <a href="{c["page"]}" rel="nofollow noopener" target="_blank">منبع</a>'
 
 
 def find_or_create_tags(names):
@@ -146,8 +175,15 @@ def main():
     if not (draft or dry) and done >= DAILY_CAP:
         raise SystemExit(f"daily cap reached: {done} posts already published today (Tehran time); not publishing")
 
+    photo, cand = None, None
+    if art.get("image"):  # chosen with autopost/images.py: "site-<n>" or "web-<n>"
+        import images
+        cand = images.resolve(art["slug"], art["image"])
+        photo, pw, ph, pn = images.prepare(art["slug"], cand)
+        print(f"photo {art['image']} ({cand['source']}) {pw}x{ph} {pn} bytes from {cand.get('page') or cand['url']}")
     cover = os.path.join(HERE, "drafts", art["slug"] + ".webp")
-    size = make_cover(art.get("cover_title") or art["title"], art["cover_kicker"], cover)
+    size = make_cover(art.get("cover_title") or art["title"], art["cover_kicker"], cover,
+                      bg=os.path.relpath(photo, HERE) if photo else None)
     print(f"cover {cover} {size} bytes, {words} words")
 
     AUTH = "Basic " + base64.b64encode(f"{USER}:{password()}".encode()).decode()
@@ -159,11 +195,20 @@ def main():
               f"{done}/{DAILY_CAP} published today; nothing was uploaded or posted")
         return
 
-    b = "----dejbansecautopost"
-    body = (f"--{b}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{art['slug']}.webp\"\r\n"
-            "Content-Type: image/webp\r\n\r\n").encode() + open(cover, "rb").read() + \
-           f"\r\n--{b}\r\nContent-Disposition: form-data; name=\"alt_text\"\r\n\r\n{art['title']}\r\n--{b}--\r\n".encode()
-    media = rest("POST", "wp/v2/media", raw=body, headers={"Content-Type": f"multipart/form-data; boundary={b}"})
+    image_log = None
+    if cand and cand["source"] == "web":  # keep the photo itself in the library (with its credit) for later articles
+        keywords = [k.lower() for k in art.get("image_keywords") or cand.get("query", "").split()]
+        pm = upload_media(photo, f"{art['slug']}-photo.webp", {
+            "title": cand.get("title") or art["slug"], "alt_text": art.get("image_alt") or art["title"],
+            "caption": photo_credit(cand),
+            "description": f"{cand.get('title', '')}\nCreator: {cand.get('creator', '')}\nLicense: {cand.get('license')} "
+                           f"{cand.get('license_url', '')}\nSource: {cand.get('page')}\nKeywords: {', '.join(keywords)}"})
+        image_log = {"source": "web", "media_id": pm["id"], "url": pm["source_url"], "title": cand.get("title", ""),
+                     "creator": cand.get("creator", ""), "license": cand.get("license"), "page": cand.get("page"),
+                     "original": cand.get("url"), "keywords": keywords}
+    elif cand:
+        image_log = {"source": "site", "media_id": cand.get("id"), "url": cand["url"]}
+    media = upload_media(cover, f"{art['slug']}.webp", {"alt_text": art["title"]})
 
     post = rest("POST", "wp/v2/posts", {
         "title": art["title"], "slug": art["slug"], "excerpt": art["excerpt"], "content": content,
@@ -173,7 +218,9 @@ def main():
     })
     entry = {"date": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "id": post["id"], "status": post["status"],
              "link": post["link"], "title": art["title"], "category": art["category"], "topic": art.get("topic", ""),
-             "sources": art.get("sources", []), "words": words}
+             "sources": art.get("sources", []), "words": words, "cover_id": media["id"]}
+    if image_log:
+        entry["image"] = image_log
     with open(LOG, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     print("PUBLISHED" if post["status"] == "publish" else "DRAFT", post["id"], post["link"])

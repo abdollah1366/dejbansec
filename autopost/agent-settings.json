@@ -7,6 +7,7 @@
       "WebSearch",
       "WebFetch",
       "Edit(autopost/drafts/**)",
+      "Bash(python autopost/images.py:*)",
       "Bash(python autopost/publish.py:*)",
       "Bash(python autopost/site.py:*)"
     ],
