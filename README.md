@@ -26,6 +26,8 @@
 | `dejbansec-content-import` | 1.0.0 | فعال | ساخت برگه‌ها، دسته‌ها و مقاله‌های اولیه |
 | `dejbansec-live-chat-n8n-reply` | 1.2.0 | فعال | چت زنده با REST API (`dejbansec/v1/chat`) و پاسخ از n8n |
 | `dsu-integration` (`dejbansec-project-to-livechat`) | 1.0.0 | فعال | اتصال فرم «شروع همکاری» به پرونده‌ی Live Chat |
+| `dejbansec-form-guard` | 1.0.0 | فعال | ضد اسپم فرم «شروع همکاری» و فرم‌های خدمات، صندوق «درخواست‌ها» در پیشخوان، تنظیمات ایمیل و SMTP (تنظیمات ← ایمیل و فرم‌ها) |
+| `dejbansec-seo` | 1.0.0 | فعال | توضیحات متا، Open Graph، JSON-LD (سازمان، مقاله، مسیر صفحه، سؤالات متداول)، حذف نقشه‌ی کاربران و noindex محتوای نمونه (تنظیمات ← سئوی دژبان‌سک) |
 | `dejbansec-live-chat-n8n-connected` | 1.1.0 | غیرفعال | نسخه‌ی قدیمی چت |
 | `dejbansec-live-chat-pro-2.1-fixed` | 2.1.0 | غیرفعال | نسخه‌ی Pro چت با پنل اپراتور |
 
